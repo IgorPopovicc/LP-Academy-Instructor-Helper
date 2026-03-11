@@ -1,1 +1,228 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --brand: #145da0;
+  --brand-deep: #0b3b68;
+  --accent: #4bb3fd;
+  --accent-strong: #1f8ef1;
+
+  --ink: #152238;
+  --muted: #4e617c;
+
+  --bg: #eef3f8;
+  --card: #ffffff;
+
+  --panel-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.66));
+  --panel-border: rgba(115, 136, 168, 0.26);
+  --soft-border: rgba(115, 136, 168, 0.3);
+
+  --ring: rgba(31, 142, 241, 0.25);
+
+  --radius-xl: 16px;
+  --radius-2xl: 22px;
+
+  --shadow-sm: 0 8px 22px rgba(17, 38, 63, 0.08);
+  --shadow-md: 0 16px 38px rgba(17, 38, 63, 0.12);
+  --shadow-lg: 0 26px 56px rgba(17, 38, 63, 0.2);
+
+  --danger-ink: #891b1f;
+  --danger-bg: rgba(220, 38, 38, 0.12);
+}
+
+html.dark {
+  --bg: #081526;
+  --card: #0f2034;
+  --ink: #e5f1ff;
+  --muted: #9db2cc;
+
+  --panel-bg: linear-gradient(180deg, rgba(9, 24, 40, 0.9), rgba(9, 24, 40, 0.72));
+  --panel-border: rgba(145, 167, 198, 0.22);
+  --soft-border: rgba(145, 167, 198, 0.3);
+
+  --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.32);
+  --shadow-md: 0 16px 38px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 28px 60px rgba(0, 0, 0, 0.5);
+
+  --danger-ink: #ffc9cc;
+}
+
+html.dark body {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(950px 520px at 5% -10%, rgba(75, 179, 253, 0.2), transparent 60%),
+    radial-gradient(900px 450px at 105% 0%, rgba(20, 93, 160, 0.16), transparent 55%),
+    radial-gradient(780px 400px at 50% 120%, rgba(75, 179, 253, 0.1), transparent 65%),
+    var(--bg);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: Manrope, 'Source Sans 3', sans-serif;
+  letter-spacing: -0.015em;
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(14px, 2vw, 28px);
+}
+
+.btn,
+.btn-ghost,
+.chip,
+.input,
+select,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-family: Manrope, 'Source Sans 3', sans-serif;
+  font-weight: 700;
+  background: linear-gradient(180deg, var(--accent), #5ec0ff);
+  color: #042238;
+  box-shadow: 0 10px 22px rgba(75, 179, 253, 0.34);
+  transition: transform 0.16s ease, box-shadow 0.2s ease, filter 0.16s ease;
+}
+
+html.dark .btn {
+  color: #08263e;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: saturate(1.05);
+  box-shadow: 0 14px 28px rgba(75, 179, 253, 0.4);
+}
+
+.btn-ghost {
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid rgba(31, 142, 241, 0.28);
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-family: Manrope, 'Source Sans 3', sans-serif;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.16s ease;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  border-color: rgba(31, 142, 241, 0.48);
+  background: rgba(31, 142, 241, 0.08);
+  transform: translateY(-1px);
+}
+
+.input,
+select {
+  width: 100%;
+  padding: 11px 12px;
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--soft-border);
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.input:focus,
+select:focus {
+  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 5px var(--ring);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  background: linear-gradient(180deg, rgba(20, 93, 160, 0.16), rgba(20, 93, 160, 0.07));
+  color: var(--brand-deep);
+  border: 1px solid rgba(20, 93, 160, 0.3);
+}
+
+html.dark .tag {
+  color: #cde6ff;
+}
+
+.chip {
+  appearance: none;
+  cursor: pointer;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  border: 1px solid rgba(20, 93, 160, 0.3);
+  background: linear-gradient(180deg, rgba(20, 93, 160, 0.18), rgba(20, 93, 160, 0.08));
+  color: var(--ink);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.chip:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(20, 93, 160, 0.24);
+}
+
+.chip.danger {
+  border-color: rgba(220, 38, 38, 0.35);
+  background: linear-gradient(180deg, rgba(220, 38, 38, 0.14), rgba(220, 38, 38, 0.06));
+  color: var(--danger-ink);
+}
+
+a.clean {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.clean:hover {
+  text-decoration: underline;
+}
+
+button:disabled,
+.btn:disabled,
+.btn-ghost:disabled,
+.chip:disabled {
+  opacity: 0.52;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}

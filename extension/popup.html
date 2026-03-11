@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="color-scheme" content="light dark">
+  <style>
+    :root {
+      --brand: #2c7886;
+      --accent: #66c3ff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --bg: #f4f7fa;
+      --card: #ffffff;
+      --shadow: 0 6px 18px rgba(2, 8, 23, .06);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1220;
+        --card: #0f172a;
+        --ink: #e5f1ff;
+        --muted: #90a4c7;
+        --shadow: 0 6px 18px rgba(0,0,0,.25);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      width: 360px;
+      padding: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(148,163,184,.25);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .brand img { width: 32px; height: 32px; border-radius: 8px; }
+    .brand strong { font-size: 14px; }
+    .brand small { color: var(--muted); }
+
+    .stats {
+      display: flex; flex-wrap: wrap;
+      gap: 8px; font-size: 12px; color: var(--muted);
+    }
+
+    .pill {
+      font-weight: 600;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,.35);
+      background: rgba(148,163,184,.06);
+      color: var(--ink);
+    }
+
+    .row { display: grid; gap: 8px; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    .btn {
+      appearance: none; border: 0; cursor: pointer;
+      padding: 10px 12px; border-radius: 10px; font-weight: 600;
+      background: linear-gradient(180deg, var(--accent), #4db6ff);
+      color: #06233b;
+      transition: transform .15s ease, box-shadow .25s ease, filter .15s ease;
+      font-size: 12px;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+      box-shadow: 0 6px 18px rgba(102,195,255,.45);
+    }
+
+    .btn-ghost {
+      background: transparent; color: var(--ink);
+      border: 1px solid rgba(99,102,241,.25);
+      border-radius: 10px; padding: 9px 12px;
+      transition: all .25s ease;
+      font-size: 12px;
+    }
+    .btn-ghost:hover {
+      border-color: rgba(99,102,241,.5);
+      background: rgba(99,102,241,.05);
+      transform: translateY(-2px);
+    }
+
+    .hint { color: var(--muted); font-size: 12px; }
+
+    .toast {
+      position: fixed; bottom: 12px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--card); color: var(--ink);
+      border: 1px solid rgba(148,163,184,.25);
+      padding: 8px 12px; border-radius: 10px; box-shadow: var(--shadow);
+      opacity: 0; pointer-events: none; transition: opacity .4s, transform .3s;
+      font-size: 12px;
+    }
+    .toast.show {
+      opacity: 1; pointer-events: all;
+      transform: translateX(-50%) translateY(-8px);
+    }
+    /* STOP SCAN – crveno dugme */
+    #stop-scan {
+      background: linear-gradient(180deg, #ff6b6b, #e54848);
+      color: #fff;
+    }
+    #stop-scan:hover:not(:disabled) {
+      box-shadow: 0 6px 18px rgba(255, 107, 107, .45);
+    }
+
+    /* CLEAR DATA – narandžasto/crvenkasto */
+    #clear-storage {
+      border-color: rgba(239, 68, 68, .35);
+      color: #b91c1c;
+    }
+    #clear-storage:hover:not(:disabled) {
+      background: rgba(239, 68, 68, .08);
+      border-color: rgba(239, 68, 68, .6);
+    }
+
+    /* DISABLED stanje – univerzalno */
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="brand">
+    <img src="assets/lpa.ico" alt="LP Academy">
+    <div>
+      <strong>Q&amp;A Extractor</strong><br />
+      <small>LP Academy</small>
+    </div>
+  </div>
+
+  <div class="stats">
+    <span id="stat-all" class="pill">All: 0</span>
+    <span id="stat-unanswered" class="pill">Unanswered: 0</span>
+    <span id="stat-needs" class="pill">Needs help: 0</span>
+    <span id="stat-upd" class="pill">Last: —</span>
+  </div>
+
+  <div class="row">
+    <div class="split">
+      <button id="stop-scan" class="btn">Stop Scan</button>
+      <button id="open-dashboard" class="btn">Open Dashboard</button>
+    </div>
+    <div class="split">
+      <button id="scan-unanswered" class="btn-ghost">Scan Unanswered</button>
+      <button id="scan-needshelp" class="btn-ghost">Scan Needs Help</button>
+    </div>
+    <div class="split">
+      <button id="export-unanswered" class="btn-ghost">Export Unanswered</button>
+      <button id="export-needshelp" class="btn-ghost">Export Needs Help</button>
+    </div>
+    <div class="split">
+      <button id="open-udemy" class="btn-ghost">Open Udemy Q&amp;A</button>
+      <button id="clear-storage" class="btn-ghost">Clear Data</button>
+    </div>
+  </div>
+
+  <div class="hint">
+    Open the Udemy Instructor Q&amp;A tab, then use “Scan Unanswered” or “Scan Needs Help” to build JSON for your dashboard.
+  </div>
+</div>
+
+<div id="toast" class="toast">Done.</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

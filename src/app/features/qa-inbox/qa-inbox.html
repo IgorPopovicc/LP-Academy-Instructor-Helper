@@ -1,0 +1,202 @@
+<section class="panel">
+  <header class="panel-head">
+    <div class="title-wrap">
+      <h1>Instructor Q&amp;A Inbox</h1>
+      <p>Prioritetno sortiranje pitanja kojima treba tvoj odgovor, sa brzim filtrima i jasnim statusima.</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <span>Total</span>
+        <strong>{{ items.length }}</strong>
+      </div>
+      <div class="stat-card warn">
+        <span>No replies</span>
+        <strong>{{ unansweredCount }}</strong>
+      </div>
+      <div class="stat-card info">
+        <span>Courses</span>
+        <strong>{{ courseOptions.length }}</strong>
+      </div>
+    </div>
+  </header>
+
+  <section class="toolbar" aria-label="Filters and actions">
+    <div class="toolbar-group actions-main">
+      <label class="file">
+        <input type="file" accept="application/json" (change)="onImport($event)" />
+        <span class="btn">Import JSON</span>
+      </label>
+
+      <button class="btn-ghost" (click)="exportCsv()" [disabled]="items.length === 0">Export CSV</button>
+      <button class="btn-ghost danger-outline" (click)="clearAll()" [disabled]="items.length === 0">
+        Clear all
+      </button>
+    </div>
+
+    <div class="toolbar-group filters-main">
+      <input
+        class="input"
+        placeholder="Search by title, body, course, author..."
+        [(ngModel)]="q"
+        (ngModelChange)="onFiltersChanged()"
+      />
+
+      <select [(ngModel)]="courseFilter" (ngModelChange)="onFiltersChanged()">
+        <option value="">All courses</option>
+        @for (c of courseOptions; track c.id) {
+          <option [value]="c.id">{{ c.title }}</option>
+        }
+      </select>
+
+      <select [(ngModel)]="viewMode" (ngModelChange)="onFiltersChanged()" aria-label="Question visibility filter">
+        <option value="default">Visible (default)</option>
+        <option value="hidden">Hidden only</option>
+        <option value="important">Important only</option>
+      </select>
+
+      <button class="btn-ghost sort-btn" (click)="toggleSort()">
+        Sort: {{ sortOrder === 'desc' ? 'Newest' : 'Oldest' }}
+      </button>
+    </div>
+
+    <div class="toolbar-group toggles-main">
+      <label class="toggle">
+        <input type="checkbox" [(ngModel)]="showUnansweredOnly" (ngModelChange)="onFiltersChanged()" />
+        <span>No replies only</span>
+      </label>
+
+      <label class="toggle">
+        <input type="checkbox" [(ngModel)]="showPopularOnly" (ngModelChange)="onFiltersChanged()" />
+        <span>Popular (1+ upvote)</span>
+      </label>
+    </div>
+  </section>
+
+  @if (importError) {
+    <div class="state error">{{ importError }}</div>
+  }
+
+  @if (items.length === 0) {
+    <div class="state empty">
+      <img src="assets/lpa.png" alt="" />
+      <h3>No imported questions</h3>
+      <p>Use <strong>Import JSON</strong> after scanning Udemy Q&amp;A in the extension popup.</p>
+    </div>
+  } @else if (filteredItems.length === 0) {
+    <div class="state empty compact">
+      <h3>No matching results</h3>
+      <p>Adjust search/filter options to see more questions.</p>
+    </div>
+  } @else {
+    <div class="results-meta">
+      Showing <strong>{{ filteredItems.length }}</strong> of <strong>{{ items.length }}</strong> questions.
+    </div>
+
+    <div class="grid">
+      @for (i of filteredItems; track trackItem($index, i)) {
+        <article
+          class="card"
+          [class.card-critical]="!i.answered"
+          [class.card-needs-help]="i.answered && !i.has_instructor_reply"
+          [class.card-important]="isImportant(i)"
+        >
+          <header class="card-head">
+            <a
+              class="clean title"
+              [href]="i.link || i.permalink || i.learning_url || 'https://www.udemy.com/instructor/communication/qa/'"
+              target="_blank"
+              rel="noopener"
+            >
+              {{ i.title }}
+            </a>
+
+            <div class="pillbar">
+              @if (i.id) {
+                <span class="pill pill-id">#{{ i.id }}</span>
+              }
+              <span class="pill pill-metric">Replies: {{ i.num_replies || 0 }}</span>
+              <span class="pill pill-metric">Upvotes: {{ i.num_upvotes || 0 }}</span>
+
+              @if (!i.answered) {
+                <span class="pill danger pill-status">No replies</span>
+              } @else if (!i.has_instructor_reply) {
+                <span class="pill warn pill-status">Needs instructor</span>
+              } @else {
+                <span class="pill ok pill-status">Instructor replied</span>
+              }
+
+              @if (i.unread) {
+                <span class="pill info pill-status">Unread</span>
+              }
+              @if (i.is_featured) {
+                <span class="pill info pill-status">Featured</span>
+              }
+              @if (isImportant(i)) {
+                <span class="pill danger pill-status">! Important</span>
+              }
+              @if (isHidden(i)) {
+                <span class="pill pill-muted pill-status">Hidden</span>
+              }
+            </div>
+
+            <span class="time">{{ displayTime(i) }}</span>
+          </header>
+
+          <div class="meta">
+            <span class="tag">Course: {{ courseLabel(i) }}</span>
+            @if (i.courseInfo?.id) {
+              <span class="tag">Course ID: {{ i.courseInfo?.id }}</span>
+            }
+            @if (i.lecture?.title) {
+              <span class="tag">Lecture: {{ i.lecture?.title }}</span>
+            }
+            @if (i.lecture?.number) {
+              <span class="tag">#{{ i.lecture?.number }}</span>
+            }
+            @if (i.author) {
+              <span class="tag">Author: {{ i.author }}</span>
+            }
+            @if (i.language) {
+              <span class="tag">Lang: {{ i.language }}</span>
+            }
+          </div>
+
+          <p class="snippet" [class.snippet-fallback]="isBodyFallback(i)">{{ snippetText(i) }}</p>
+
+          @if (i.attachments?.length) {
+            <div class="attachments">
+              @for (a of i.attachments; track $index) {
+                <a class="att" [href]="a.url" target="_blank" rel="noopener">
+                  {{ a.name || a.type || 'attachment' }}
+                </a>
+              }
+            </div>
+          }
+
+          <div class="links">
+            @if (i.learning_url) {
+              <a class="clean sublink" [href]="i.learning_url" target="_blank" rel="noopener">Learning URL</a>
+            }
+            @if (i.permalink) {
+              <a class="clean sublink" [href]="i.permalink" target="_blank" rel="noopener">Permalink</a>
+            }
+            @if (i.courseInfo?.url) {
+              <a class="clean sublink" [href]="i.courseInfo?.url" target="_blank" rel="noopener">Course</a>
+            }
+          </div>
+
+          <div class="actions">
+            <button class="chip" (click)="tag(i, 'faq')">#FAQ</button>
+            <button class="chip important-chip" [class.is-active]="isImportant(i)" (click)="toggleImportant(i)">
+              {{ isImportant(i) ? 'Important ✓' : 'Important' }}
+            </button>
+            <button class="chip danger" (click)="toggleHidden(i)">
+              {{ isHidden(i) ? 'Unhide' : 'Hide' }}
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>
