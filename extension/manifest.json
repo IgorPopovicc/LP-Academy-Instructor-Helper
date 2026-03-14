@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Udemy Q&A Extractor",
-  "description": "A productivity tool for Udemy instructors that scans course Q&A discussions, identifies unanswered and unresolved questions, and enables fast exporting of data to streamline daily instructor workflows.",
+  "description": "A productivity tool for Udemy instructors that scans course Q&A discussions.",
   "version": "1.0.1",
   "permissions": ["storage", "scripting", "tabs", "activeTab"],
   "host_permissions": [
